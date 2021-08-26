@@ -12,7 +12,7 @@ import ESLintJsonReportToJS from './eslint-json-report-to-js';
 import analyzeESLintReport from './analyze-eslint-js';
 import CONSTANTS from './constants';
 
-const { CHECK_NAME, OCTOKIT, OWNER, PULL_REQUEST, REPO, SHA } = CONSTANTS;
+const { CHECK_NAME, OCTOKIT, OWNER, PULL_REQUEST, REPO, SHA, EVENT, CONTEXT } = CONSTANTS;
 
 async function run(): Promise<void> {
   const reportJSON = ESLintJsonReportToJS();
@@ -72,15 +72,42 @@ async function run(): Promise<void> {
   if (PULL_REQUEST || core.getInput('only-pr') !== 'true') {
     // Wrap API calls in try/catch in case there are issues
     try {
-      core.debug('Fetching files changed in the pull request.');
-      const changedFiles = await getPullRequestFilesChanged();
-
-      if (changedFiles.length <= 0) {
-        core.setFailed('No files changed in the pull request.');
-      }
       let annotations = esLintAnalysis.annotations;
 
       if (core.getInput('only-changed-files') === 'true') {
+        let changedFiles: string[];
+        switch (EVENT) {
+          case 'pull_request': {
+            core.debug('Fetching files changed in the pull request.');
+            changedFiles = await getPullRequestFilesChanged();
+            break;
+          }
+          case 'push': {
+            // We're looking at a commit, so get the files that changed in the last commit
+            core.debug('Fetching changed files');
+            const base = CONTEXT.payload.before;
+            const head = CONTEXT.payload.after;
+
+            const response = await OCTOKIT.repos.compareCommits({
+              base,
+              head,
+              owner: OWNER,
+              repo: REPO,
+            });
+
+            changedFiles = response.data.files.map(f => f.filename);
+            break;
+          }
+          default: {
+            core.setFailed('We only support pull_request and push events with only-changed-files!');
+            process.exit(1);
+          }
+        }
+
+        if (changedFiles.length <= 0) {
+          core.setFailed('No files changed');
+        }
+
         annotations = annotations.filter(a => changedFiles.includes(a.path));
       }
 
