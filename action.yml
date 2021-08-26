@@ -12,6 +12,14 @@ inputs:
     description: "Fail the GitHub Action when ESLint warnings are detected. Set to 'true' to enable."
     default: "false"
     required: false
+  only-pr:
+    description: "Only annotate files changed when run on the `pull_request` event."
+    default: "false"
+    require: false
+  only-change-files:
+    description: "Only annotate changed files."
+    default: "false"
+    require: false
 runs:
   using: "node12"
   main: "dist/index.js"

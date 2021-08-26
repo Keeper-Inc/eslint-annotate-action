@@ -22,12 +22,13 @@ This allows for more flexibility on how ESLint is run. This action is agnostic e
 
 ## Inputs
 
-| Name | Description | Required | Default Value |
-|---|---|---|---|
-| `repo-token` | The [`GITHUB_TOKEN` secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token#about-the-github_token-secret) | **Yes** | N/A |
-| `report-json` | The path to the ESLint report JSON file | No | `eslint_report.json` |
-| `only-pr-files` | Only annotate files changed when run on the `pull_request` event | No | `true` |
-| `fail-on-warning` | Fail the GitHub Action when ESLint warnings are detected. Set to `true` to enable. | No | `false` |
+| Name                | Description                                                                                                                                                           | Required | Default Value        |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------- |
+| `repo-token`        | The [`GITHUB_TOKEN` secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token#about-the-github_token-secret) | **Yes**  | N/A                  |
+| `report-json`       | The path to the ESLint report JSON file                                                                                                                               | No       | `eslint_report.json` |
+| `only-pr`           | Only annotate files changed when run on the `pull_request` event                                                                                                      | No       | `true`               |
+| `only-change-files` | Only annotate changed files                                                                                                                                           | No       | `false`              |
+| `fail-on-warning`   | Fail the GitHub Action when ESLint warnings are detected. Set to `true` to enable.                                                                                    | No       | `false`              |
 
 ## Usage Example
 
