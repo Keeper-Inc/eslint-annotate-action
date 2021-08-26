@@ -16,7 +16,7 @@ inputs:
     description: "Only annotate files changed when run on the `pull_request` event."
     default: "false"
     require: false
-  only-change-files:
+  only-changed-files:
     description: "Only annotate changed files."
     default: "false"
     require: false
