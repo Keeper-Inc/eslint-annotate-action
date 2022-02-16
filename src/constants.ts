@@ -4,6 +4,8 @@ import * as core from '@actions/core';
 const token = core.getInput('repo-token', { required: true });
 const octokit = new github.GitHub(token);
 const pullRequest = github.context.payload.pull_request;
+const event = github.context.eventName;
+const context = github.context;
 
 const getPrNumber = (): number => {
   if (!pullRequest) {
@@ -31,4 +33,6 @@ export default {
   TOKEN: token,
   OCTOKIT: octokit,
   SHA: getSha(),
+  EVENT: event,
+  CONTEXT: context,
 };
