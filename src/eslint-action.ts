@@ -65,6 +65,7 @@ async function run(): Promise<void> {
    */
   core.debug('Fetching files changed in the pull request.');
   const changedFiles = await getPullRequestFilesChanged();
+  core.debug(changedFiles);
 
   if (changedFiles.length <= 0) {
     core.setFailed('No files changed in the pull request.');
@@ -98,7 +99,13 @@ async function run(): Promise<void> {
      *
      * See https://developer.github.com/v3/checks/runs/#output-object-1
      */
-    const annotations = esLintAnalysis.annotations;
+    let annotations;
+    if (core.getInput('only-changed-files') === 'true') {
+      annotations = esLintAnalysis.annotations.filter(a => changedFiles.includes(a.path));
+    } else {
+      annotations = esLintAnalysis.annotations;
+    }
+
     const numberOfAnnotations = annotations.length;
     let batch = 0;
     const batchSize = 50;
