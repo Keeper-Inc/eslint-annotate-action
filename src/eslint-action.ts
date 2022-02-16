@@ -14,10 +14,12 @@ import CONSTANTS from './constants';
 
 const { CHECK_NAME, OCTOKIT, OWNER, PULL_REQUEST, REPO, SHA } = CONSTANTS;
 
+type Conclusion = 'success' | 'failure';
+
 async function run(): Promise<void> {
   const reportJSON = ESLintJsonReportToJS();
   const esLintAnalysis = analyzeESLintReport(reportJSON);
-  const conclusion = esLintAnalysis.success ? 'success' : 'failure';
+  let conclusion : Conclusion = esLintAnalysis.success ? 'success' : 'failure';
   const currentTimestamp = new Date().toISOString();
 
   // If this is NOT a pull request
@@ -102,6 +104,9 @@ async function run(): Promise<void> {
 
     if (core.getInput('only-changed-files') === 'true') {
       annotations = esLintAnalysis.annotations.filter(a => changedFiles.includes(a.path));
+      if (annotations.length === 0) {
+        conclusion = 'success';
+      }
     } else {
       annotations = esLintAnalysis.annotations;
     }

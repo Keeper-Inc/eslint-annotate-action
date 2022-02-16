@@ -4333,7 +4333,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const reportJSON = eslint_json_report_to_js_1.default();
         const esLintAnalysis = analyze_eslint_js_1.default(reportJSON);
-        const conclusion = esLintAnalysis.success ? 'success' : 'failure';
+        let conclusion = esLintAnalysis.success ? 'success' : 'failure';
         const currentTimestamp = new Date().toISOString();
         // If this is NOT a pull request
         if (!PULL_REQUEST) {
@@ -4410,6 +4410,9 @@ function run() {
             let annotations;
             if (core.getInput('only-changed-files') === 'true') {
                 annotations = esLintAnalysis.annotations.filter(a => changedFiles.includes(a.path));
+                if (annotations.length === 0) {
+                    conclusion = 'success';
+                }
             }
             else {
                 annotations = esLintAnalysis.annotations;
