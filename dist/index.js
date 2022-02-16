@@ -3912,7 +3912,7 @@ function ESLintJsonReportToJS() {
     const report = core.getInput('report-json', { required: false }) || 'eslint_report.json';
     const reportPath = path_1.default.resolve(report);
     if (!fs_1.default.existsSync(reportPath)) {
-        core.setFailed('The report-json file "${report}" could not be resolved.');
+        core.setFailed(`The report-json file "${report}" could not be resolved.`);
     }
     const reportContents = fs_1.default.readFileSync(reportPath, 'utf-8');
     return JSON.parse(reportContents);
@@ -4407,7 +4407,13 @@ function run() {
              *
              * See https://developer.github.com/v3/checks/runs/#output-object-1
              */
-            const annotations = esLintAnalysis.annotations;
+            let annotations;
+            if (core.getInput('only-changed-files') === 'true') {
+                annotations = esLintAnalysis.annotations.filter(a => changedFiles.includes(a.path));
+            }
+            else {
+                annotations = esLintAnalysis.annotations;
+            }
             const numberOfAnnotations = annotations.length;
             let batch = 0;
             const batchSize = 50;
